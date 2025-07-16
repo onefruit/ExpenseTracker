@@ -10,4 +10,5 @@ public class GlobalApiResponse {
     private ResponseStatus responseStatus;
     private String message;
     private Object data;
+
 }
