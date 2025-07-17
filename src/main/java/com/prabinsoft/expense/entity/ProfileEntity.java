@@ -15,15 +15,16 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@Table(name = "tbl-profiles")
+@Table(name = "tbl_profiles")
 public class ProfileEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Integer id;
     private String fullName;
-    @Column(unique = true)
+    //    @Column(unique = true)
     private String email;
+    private String password;
     private String profileImageUrl;
     @Column(updatable = false)
     @CreationTimestamp

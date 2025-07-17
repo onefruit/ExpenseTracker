@@ -10,6 +10,7 @@ import java.time.LocalDateTime;
 public class ProfileRequest {
     private Integer id;
     private String fullName;
+    private String password;
     private String email;
     private String profileImageUrl;
     private LocalDateTime createdAt;
