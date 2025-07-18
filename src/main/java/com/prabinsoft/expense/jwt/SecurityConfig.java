@@ -28,13 +28,27 @@ public class SecurityConfig {
     private final AppUserDetailsService appUserDetailsService;
     private final JwtRequestFilter requestFilter;
 
+    private static final String[] PUBLIC_URLS = {
+            "/swagger-ui.html",
+            "/swagger-ui/**",
+            "/api-docs",
+            "/v3/api-docs",
+            "/v3/api-docs/**",
+            "/v3/api-docs/swagger-config",
+            "/swagger-resources/**",
+            "/webjars/**"
+    };
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .cors(Customizer.withDefaults())
                 .csrf(AbstractHttpConfigurer::disable)
-                .authorizeHttpRequests(auth -> auth.requestMatchers("/api/**").permitAll()
-                        .anyRequest().authenticated())
+                .authorizeHttpRequests(
+                        auth -> auth
+                                .requestMatchers(PUBLIC_URLS).permitAll()
+                                .requestMatchers("/api/**").permitAll()
+                                .anyRequest().authenticated())
                 .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(requestFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
