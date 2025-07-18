@@ -1,6 +1,6 @@
 package com.prabinsoft.expense.service;
 
-import com.prabinsoft.expense.entity.ProfileEntity;
+import com.prabinsoft.expense.entity.Profile;
 import com.prabinsoft.expense.repo.ProfileRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.User;
@@ -18,12 +18,12 @@ public class AppUserDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        ProfileEntity profileEntity = profileRepository.findByEmail(email).orElseThrow(() ->
+        Profile profile = profileRepository.findByEmail(email).orElseThrow(() ->
                 new UsernameNotFoundException("Profile not found with email: " + email));
 
         return User.builder()
-                .username(profileEntity.getEmail())
-                .password(profileEntity.getPassword())
+                .username(profile.getEmail())
+                .password(profile.getPassword())
                 .authorities(Collections.emptyList())
                 .build();
 

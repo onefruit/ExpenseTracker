@@ -3,7 +3,7 @@ package com.prabinsoft.expense.service.category;
 import com.prabinsoft.expense.dto.category.CategoryRequest;
 import com.prabinsoft.expense.dto.category.CategoryResponse;
 import com.prabinsoft.expense.entity.Category;
-import com.prabinsoft.expense.entity.ProfileEntity;
+import com.prabinsoft.expense.entity.Profile;
 import com.prabinsoft.expense.repo.CategoryRepo;
 import com.prabinsoft.expense.service.profile.ProfileService;
 import lombok.RequiredArgsConstructor;
@@ -28,7 +28,7 @@ public class CategoryServiceImpl {
         if (request.getId() != null) {
             categoryRepo.findById(request.getId()).orElse(category);
         }
-        ProfileEntity currentProfile = profileService.getCurrentProfile();
+        Profile currentProfile = profileService.getCurrentProfile();
         if (categoryRepo.existsByNameAndProfileId(request.getName(), currentProfile.getId())) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Category with this name already exists");
         }
@@ -38,13 +38,13 @@ public class CategoryServiceImpl {
     }
 
     public List<CategoryResponse> getCategoriesForCurrentUser() {
-        ProfileEntity currentProfile = profileService.getCurrentProfile();
+        Profile currentProfile = profileService.getCurrentProfile();
         List<Category> categories = categoryRepo.findByProfileId(currentProfile.getId());
         return categories.stream().map(e -> modelMapper.map(e, CategoryResponse.class)).collect(Collectors.toList());
     }
 
     public List<CategoryResponse> getCategoriesByTypeForCurrentUser(String type) {
-        ProfileEntity currentProfile = profileService.getCurrentProfile();
+        Profile currentProfile = profileService.getCurrentProfile();
         List<Category> categories = categoryRepo.findByTypeAndProfileId(type, currentProfile.getId());
         return categories.stream().map(e -> modelMapper.map(e, CategoryResponse.class)).collect(Collectors.toList());
     }

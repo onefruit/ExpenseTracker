@@ -3,7 +3,7 @@ package com.prabinsoft.expense.service.profile;
 import com.prabinsoft.expense.dto.AuthRequest;
 import com.prabinsoft.expense.dto.profile.ProfileRequest;
 import com.prabinsoft.expense.dto.profile.ProfileResponse;
-import com.prabinsoft.expense.entity.ProfileEntity;
+import com.prabinsoft.expense.entity.Profile;
 
 import java.util.Map;
 
@@ -14,7 +14,7 @@ public interface ProfileService {
 
     boolean isAccountActive(String email);
 
-    ProfileEntity getCurrentProfile();
+    Profile getCurrentProfile();
 
     ProfileResponse getPublicProfile(String email);
 

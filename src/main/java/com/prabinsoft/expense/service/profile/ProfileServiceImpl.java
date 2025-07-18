@@ -3,7 +3,7 @@ package com.prabinsoft.expense.service.profile;
 import com.prabinsoft.expense.dto.AuthRequest;
 import com.prabinsoft.expense.dto.profile.ProfileRequest;
 import com.prabinsoft.expense.dto.profile.ProfileResponse;
-import com.prabinsoft.expense.entity.ProfileEntity;
+import com.prabinsoft.expense.entity.Profile;
 import com.prabinsoft.expense.jwt.JwtHelper;
 import com.prabinsoft.expense.repo.ProfileRepository;
 import com.prabinsoft.expense.service.AppUserDetailsService;
@@ -46,25 +46,25 @@ public class ProfileServiceImpl implements ProfileService {
 
     @Override
     public ProfileResponse createProfile(ProfileRequest profileRequest) {
-        ProfileEntity profileEntity;
+        Profile profile;
         if (profileRequest.getId() != null) {
-            profileEntity = profileRepository.findById(profileRequest.getId()).orElse(new ProfileEntity());
-            modelMapper.map(profileRequest, profileEntity);
+            profile = profileRepository.findById(profileRequest.getId()).orElse(new Profile());
+            modelMapper.map(profileRequest, profile);
         } else {
-            profileEntity = modelMapper.map(profileRequest, ProfileEntity.class);
+            profile = modelMapper.map(profileRequest, Profile.class);
         }
-        profileEntity.setActivationToken(UUID.randomUUID().toString());
-        profileEntity.setPassword(passwordEncoder.encode(profileRequest.getPassword()));
+        profile.setActivationToken(UUID.randomUUID().toString());
+        profile.setPassword(passwordEncoder.encode(profileRequest.getPassword()));
         try {
-            profileEntity = profileRepository.save(profileEntity);
-            String activationLink = "http://localhost:8848/api/activate?token=" + profileEntity.getActivationToken();
+            profile = profileRepository.save(profile);
+            String activationLink = "http://localhost:8848/api/activate?token=" + profile.getActivationToken();
             String subject = "Activate your Expense Tracker Account";
             String body = "Click on the following link to activate your account: " + activationLink;
-            emailService.sendMail(profileEntity.getEmail(), subject, body);
+            emailService.sendMail(profile.getEmail(), subject, body);
         } catch (DataIntegrityViolationException e) {
             throw new DataIntegrityViolationException("Failed to save profile entity", e);
         }
-        return modelMapper.map(profileEntity, ProfileResponse.class);
+        return modelMapper.map(profile, ProfileResponse.class);
     }
 
     @Override
@@ -79,11 +79,11 @@ public class ProfileServiceImpl implements ProfileService {
     @Override
     public boolean isAccountActive(String email) {
         return profileRepository.findByEmail(email)
-                .map(ProfileEntity::getIsActive).orElse(false);
+                .map(Profile::getIsActive).orElse(false);
     }
 
     @Override
-    public ProfileEntity getCurrentProfile() {
+    public Profile getCurrentProfile() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         return profileRepository.findByEmail(authentication.getName()).orElseThrow(() ->
                 new UsernameNotFoundException("Profile not found with email: " + authentication.getName()));
@@ -91,7 +91,7 @@ public class ProfileServiceImpl implements ProfileService {
 
     @Override
     public ProfileResponse getPublicProfile(String email) {
-        ProfileEntity currentUser = null;
+        Profile currentUser = null;
         if (email == null) {
             currentUser = getCurrentProfile();
         } else {
