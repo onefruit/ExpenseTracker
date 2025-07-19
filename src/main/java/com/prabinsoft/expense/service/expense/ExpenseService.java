@@ -10,6 +10,7 @@ import com.prabinsoft.expense.repo.ExpenseRepo;
 import com.prabinsoft.expense.service.profile.ProfileService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -86,5 +87,17 @@ public class ExpenseService {
         return total != null ? total : BigDecimal.ZERO;
     }
 
+    public List<ExpenseResponse> filterExpense(LocalDate startDate, LocalDate endDate, String keyword, Sort sort) {
+        Profile profile = profileService.getCurrentProfile();
+        List<Expense> expenseList = expenseRepo.findByProfileIdAndDateBetweenAndNameContainingIgnoreCase(profile.getId(),
+                startDate, endDate, keyword, sort);
+        return expenseList.stream().map(e -> modelMapper.map(e, ExpenseResponse.class)).collect(Collectors.toList());
+    }
+
+    public List<ExpenseResponse> getExpenseForUserOnDate(Integer profileId, LocalDate date) {
+        Profile currentProfile = profileService.getCurrentProfile();
+        List<Expense> byProfileIdAndDate = expenseRepo.findByProfileIdAndDate(currentProfile.getId(), date);
+        return byProfileIdAndDate.stream().map(e -> modelMapper.map(e, ExpenseResponse.class)).collect(Collectors.toList());
+    }
 
 }
